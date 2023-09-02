@@ -4,3 +4,7 @@ setuptools~=65.5.1
 six~=1.16.0
 behave~=1.2.6
 parse~=1.19.1
+pre-commit ~=3.3.3
+selenium~=4.11.2
+loguru~=0.7.0
+assertpy~=1.1
