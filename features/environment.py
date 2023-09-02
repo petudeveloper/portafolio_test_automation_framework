@@ -31,5 +31,5 @@ def after_all(context):
     These run after the whole shooting match
     :param context: behave.context. behaves variable used to share values between steps
     """
-    if context.device == "pc":
+    if context.device == "pc" and context.browser == "firefox":
         context.driver.quit()
