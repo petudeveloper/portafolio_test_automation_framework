@@ -1,5 +1,7 @@
 import time
 
+import cv2
+from loguru import logger
 from selenium.webdriver.common.by import By
 
 
@@ -15,11 +17,11 @@ class Page:
         """
         self.web_driver = context.driver
 
-    # Locators
+    # ------------------------------------------- Locators -------------------------------------------
     _h1 = (By.TAG_NAME, "h1")
+    _images_list = (By.TAG_NAME, "img")
 
-    # URL Methods
-    # - url_connect
+    # ------------------------------------------- URL Methods -------------------------------------------
     def url_connect(self, url):
         """
         These methods navigate to the specified url
@@ -33,7 +35,7 @@ class Page:
     # - navigate_forward
     # - execute_script
 
-    # Page Methods
+    # ------------------------------------------- Page Methods -------------------------------------------
     def wait_for_page_finish_loading(self, timeout=120):
         """
         This method waits a determined for the document.readyState to be equal to complete
@@ -51,7 +53,6 @@ class Page:
                     "Page did not loaded document.readyState was never equal to complete"
                 )
 
-    # - get_current_page_tittle
     def get_current_page_main_heading(self):
         """
         This method get the current h1 text
@@ -66,6 +67,28 @@ class Page:
         """
         return self.web_driver.title
 
+    def verify_alt_text_for_all_images(self):
+        """
+
+        :return:
+        """
+        images_list = self.web_driver.find_elements(By.CSS_SELECTOR, "img")
+        no_alt_images = []
+        for image in images_list:
+            if image.get_attribute("alt") == "":
+                no_alt_images.append(image)
+        return len(no_alt_images) == 0
+
+    def get_rms_contrast(self, img_url):
+        """
+        Calculates the RMS contrast using the standard deviation of the greyed image pixel intensities
+        :param img_url: str. url of the image
+        :return:
+        """
+        img_grey = cv2.cvtColor(img_url, cv2.COLOR_BGR2GRAY)
+        contrast = img_grey.std()
+        return contrast
+
     # - get_element_by_selector
     # - is_element_present_by_selector
     # - is_element_clickable_by_selector
@@ -79,8 +102,28 @@ class Page:
     # - scroll_up
     # - close_current_tab
     # - full_page_screenshot
+    def page_screenshot(self, image_name):
+        """
+        This method takes a screenshot of the page
+        :param image_name: str. name of the image
+        :return:
+        """
+        self.wait_for_page_finish_loading()
+        required_width = self.web_driver.execute_script(
+            "return document.body.parentNode.scrollWidth"
+        )
+        required_height = self.web_driver.execute_script(
+            "return document.body.parentNode.scrollHeight"
+        )
+        self.web_driver.set_window_size(required_width, required_height)
+        self.web_driver.execute_script(
+            "window.scrollTo(0,document.body.scrollHeight);"
+        )
+        body_el = self.web_driver.find_element(By.TAG_NAME, "body")
+        body_el.screenshot("./images/screenshots/" + image_name + ".png")
+        logger.success("took full screenshot!")
 
-    # Cookie Methods
+    # ------------------------------------------- Cookie Methods -------------------------------------------
     # - add_cookie
     # - get_cookie_by_name
     # - get_all_cookies

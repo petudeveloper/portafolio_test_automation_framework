@@ -44,3 +44,12 @@ def check_page_main_title(context, heading):
     assert_that(context.page.get_current_page_main_heading()).is_equal_to(
         heading
     )
+
+
+@step("I verify the presence of alternate text for all images")
+def verify_alternate_text_in_all_images(context):
+    """
+    This method verify the presence of alternate text for all images
+    :param context: behave.context. behaves variable used to share values between steps
+    """
+    assert_that(context.page.verify_alt_text_for_all_images()).is_true()
