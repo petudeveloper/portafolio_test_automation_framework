@@ -31,7 +31,11 @@ def verify_page_title(context, page_title):
     :param page_title: str. expected title
     :param context: behave.context. behaves variable used to share values between steps
     """
-    assert_that(context.page.return_title()).is_equal_to(page_title)
+    actual_title = context.page.return_title()
+    assert_that(actual_title).described_as(
+        f"The page title doesnt match, the expected result was: '{page_title}', "
+        f"but was: '{actual_title}'"
+    ).is_equal_to(page_title)
 
 
 @step('I can see "{heading}" main heading')
@@ -41,9 +45,11 @@ def check_page_main_title(context, heading):
     :param heading: str. expected h1
     :param context: behave.context. behaves variable used to share values between steps
     """
-    assert_that(context.page.get_current_page_main_heading()).is_equal_to(
-        heading
-    )
+    actual_heading = context.page.get_current_page_main_heading()
+    assert_that(actual_heading).described_as(
+        f"The page title doesnt match, the expected result was: '{heading}', "
+        f"but was: '{actual_heading}'"
+    ).is_equal_to(heading)
 
 
 @step("I verify the presence of alternate text for all images")
@@ -52,4 +58,20 @@ def verify_alternate_text_in_all_images(context):
     This method verify the presence of alternate text for all images
     :param context: behave.context. behaves variable used to share values between steps
     """
-    assert_that(context.page.verify_alt_text_for_all_images()).is_true()
+    assert_that(context.page.verify_alt_text_for_all_images()).described_as(
+        "One or more images dont have the alt " "property"
+    ).is_true()
+
+
+@step("I check the accessibility of the page using axe tool")
+def verify_accessibility_with_axe(context):
+    """
+    This method verify the presence of alternate text for all images
+    :param context: behave.context. behaves variable used to share values between steps
+    """
+    result_and_report = (
+        context.page.generate_accessibility_axe_result_and_report()
+    )
+    results = result_and_report["results"]
+    report = result_and_report["report"]
+    assert len(results) == 0, report

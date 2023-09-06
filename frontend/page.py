@@ -1,6 +1,6 @@
 import time
 
-import cv2
+from axe_selenium_python import Axe
 from loguru import logger
 from selenium.webdriver.common.by import By
 
@@ -69,7 +69,7 @@ class Page:
 
     def verify_alt_text_for_all_images(self):
         """
-
+        Verify that all the images have the alt property
         :return:
         """
         images_list = self.web_driver.find_elements(By.CSS_SELECTOR, "img")
@@ -79,15 +79,33 @@ class Page:
                 no_alt_images.append(image)
         return len(no_alt_images) == 0
 
-    def get_rms_contrast(self, img_url):
+    def generate_accessibility_axe_result_and_report(self):
         """
-        Calculates the RMS contrast using the standard deviation of the greyed image pixel intensities
-        :param img_url: str. url of the image
+        Run axe tool to generate accessibility test results
         :return:
         """
-        img_grey = cv2.cvtColor(img_url, cv2.COLOR_BGR2GRAY)
-        contrast = img_grey.std()
-        return contrast
+        axe = Axe(self.web_driver)
+        # Inject axe-core javascript into page.
+        axe.inject()
+        # Run axe accessibility checks.
+        results = axe.run()
+        # Write results to file
+        axe.write_results(results, "./results/a11y.json")
+        # Assert no violations are found
+        return {
+            "results": results["violations"],
+            "report": axe.report(results["violations"]),
+        }
+
+    # def get_rms_contrast(self, img_url):
+    #     """
+    #     Calculates the RMS contrast using the standard deviation of the greyed image pixel intensities
+    #     :param img_url: str. url of the image
+    #     :return:
+    #     """
+    #     img_grey = cv2.cvtColor(img_url, cv2.COLOR_BGR2GRAY)
+    #     contrast = img_grey.std()
+    #     return contrast
 
     # - get_element_by_selector
     # - is_element_present_by_selector
