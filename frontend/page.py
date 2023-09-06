@@ -76,8 +76,8 @@ class Page:
         no_alt_images = []
         for image in images_list:
             if image.get_attribute("alt") == "":
-                no_alt_images.append(image)
-        return len(no_alt_images) == 0
+                no_alt_images.append(image.get_attribute("src"))
+        return no_alt_images
 
     def generate_accessibility_axe_result_and_report(self):
         """

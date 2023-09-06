@@ -1,3 +1,5 @@
+import datetime
+
 from assertpy import assert_that
 from behave import step
 
@@ -58,8 +60,10 @@ def verify_alternate_text_in_all_images(context):
     This method verify the presence of alternate text for all images
     :param context: behave.context. behaves variable used to share values between steps
     """
-    assert_that(context.page.verify_alt_text_for_all_images()).described_as(
-        "One or more images dont have the alt " "property"
+    no_alt_images = context.page.verify_alt_text_for_all_images()
+    no_alt_images_len = len(no_alt_images)
+    assert_that(no_alt_images_len == 0).described_as(
+        f"{no_alt_images_len} images dont have the alt property: {no_alt_images}"
     ).is_true()
 
 
@@ -75,3 +79,19 @@ def verify_accessibility_with_axe(context):
     results = result_and_report["results"]
     report = result_and_report["report"]
     assert len(results) == 0, report
+
+
+@step("I verify the color contrast of the portfolio image")
+def verify_color_contrast(context):
+    """
+    This method verify the color contrast of the portfolio image
+    :param context: behave.context. behaves variable used to share values between steps
+    """
+    image_name = "page-screenshot-" + datetime.datetime.now().strftime(
+        "%Y%m%d-%H%M%S"
+    )
+    context.page.page_screenshot(image_name)
+    contrast = context.page.get_rms_contrast(
+        r"C:\Users\jesus\Documents\almadev\portafolio_test_automation_framework\images\screenshots\page_screenshot.png"
+    )
+    print(contrast)

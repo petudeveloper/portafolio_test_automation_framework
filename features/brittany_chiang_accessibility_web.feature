@@ -1,22 +1,22 @@
-Feature: Validate Portfolio Accessibility
+Feature: Validate David Alvarez Portfolio Accessibility
 
   Scenario: Validate Title
-    Given I navigate to "https://www.petudeveloper.com/"
+    Given I navigate to "https://brittanychiang.com/"
     When I wait for page finish loading
-    Then I verify page title is "David Alvarez Portfolio"
+    Then I verify page title is "Brittany Chiang"
 
   Scenario: Validate main Heading structure
-    Given I navigate to "https://www.petudeveloper.com/"
+    Given I navigate to "https://brittanychiang.com/"
     When I wait for page finish loading
-    Then I can see "David Alvarez" main heading
+    Then I can see "Brittany Chiang" main heading
 
   Scenario: Validate images alternate text
-    Given I navigate to david's portfolio
+    Given I navigate to brittany's portfolio
     When I wait for page finish loading
     Then I verify the presence of alternate text for all images
 
   Scenario: Validate accessibility using axe
-    Given I navigate to david's portfolio
+    Given I navigate to brittany's portfolio
     When I wait for page finish loading
     Then I check the accessibility of the page using axe tool
 
