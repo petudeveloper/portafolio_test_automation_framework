@@ -2,7 +2,10 @@ import time
 
 from axe_selenium_python import Axe
 from loguru import logger
+from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 class Page:
@@ -107,7 +110,22 @@ class Page:
     #     contrast = img_grey.std()
     #     return contrast
 
-    # - get_element_by_selector
+    def get_element_by_selector(self, selector, timeout=-1, poll=0.5):
+        """
+        This method returns a web element based on its selector
+        :param timeout: specified timeout to wait the element
+        :param poll: float. sleep time until try to find element
+        :param selector: selenium.webdriver.common.by Selector of the element that needs to be retrieved
+        :return: selenium.webDriverElement
+        """
+        try:
+            return WebDriverWait(
+                self.web_driver, timeout, poll_frequency=poll
+            ).until(expected_conditions.presence_of_element_located(selector))
+        except TimeoutException:
+            print("Element was not able to be found")
+            return False
+
     # - is_element_present_by_selector
     # - is_element_clickable_by_selector
     # - click_element

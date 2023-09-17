@@ -2,6 +2,7 @@ import datetime
 
 from assertpy import assert_that
 from behave import step
+from selenium.webdriver.common.by import By
 
 from frontend.page import Page
 
@@ -26,7 +27,7 @@ def wait_for_page(context):
     context.page.wait_for_page_finish_loading()
 
 
-@step('I verify page title is "{page_title}"')
+@step('I verify that the title has the name "{page_title}"')
 def verify_page_title(context, page_title):
     """
     This method verifies the title tag of a webpage
@@ -95,3 +96,17 @@ def verify_color_contrast(context):
         r"C:\Users\jesus\Documents\almadev\portafolio_test_automation_framework\images\screenshots\page_screenshot.png"
     )
     print(contrast)
+
+
+@step("I validate the sections of the portfolio")
+def validate_portfolio_sections(context):
+    """
+    This method verify the presence the sections
+    :param context: behave.context. behaves variable used to share values between steps
+    """
+    for row in context.table:
+        section_name = row["section"].lower()
+        assert context.page.get_element_by_selector((By.ID, section_name)), (
+            f"The {section_name} section was NOT " "found in the portfolio"
+        )
+        print(f"The {section_name} section was found in the portfolio")
